@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+table,td,th{
+    border: 3px solid ;
+    border-collapse: collapse;
+    padding: 10px;
+
+button{
+    background-color: grey;
+    color: white;
+}
+}
+
+</style>
+
+<h1>My orders</h1>
+<table >
+    <thead>
+        <tr>
+            <th>product name</th>
+            <th>tax</th>
+            <th>price</th>
+            <th>update</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{product.product_name}}</td>
+            <td>{{product.tax}}</td>
+            <td>{{product.price}}</td>
+            <td>
+                <a href="{% url 'update_product' product.id %}">
+                <button>Update</button>
+                </a>
+            </td>
+            <td>
+                <a href="{% url 'delete_product' product.id %}">
+                <button>Delete</button>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
