@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from os import getenv
+# from dotenv import 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -80,9 +82,21 @@ WSGI_APPLICATION = 'api.wsgi.app'
 # environments like Vercel. You can use a database over HTTP, hosted elsewhere.
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
+    'default':{
+        'ENGINE':'django.db.backends.postgresql',
+        'NAME':getenv('neondb'),
+        'USER':getenv('neondb_owner'),
+        'PASSWORD':getenv('SVqg8TsNX1Ld'),
+        'HOST':getenv('ep-tight-boat-a1l4btcv-pooler.ap-southeast-1.aws.neon.tech'),
+        'PORT':getenv('PGPORT',5432),
+        'OPTIONS':{
+            'sslmode':'require',
+        },
+        'DISABLE_SERVER_SIDE_CURSORS':True,
     }
 }
 
