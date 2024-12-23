@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'Inventory',
     'OrderManagement',
     'bootstrap5',
+    'dashboard',
 ]
 
 MIDDLEWARE = [
@@ -83,14 +84,13 @@ WSGI_APPLICATION = 'api.wsgi.app'
 # Note: Django modules for using databases are not support in serverless
 # environments like Vercel. You can use a database over HTTP, hosted elsewhere.
 load_dotenv(".env")
-tmpPostgres = urlparse(getenv("DATABASE_URL"))
 DATABASES = {
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
     'default': 
-        dj_database_url.parse(url=getenv("DATABASE_URL",''),
+        dj_database_url.parse(url=getenv("DATABASE_URL",'postgresql://neondb_owner:SVqg8TsNX1Ld@ep-tight-boat-a1l4btcv.ap-southeast-1.aws.neon.tech/neondb?sslmode=require'),
         conn_max_age = 600,conn_health_checks=True)
         # 'ENGINE': 'django.db.backends.postgresql',
         # 'NAME': tmpPostgres.path.replace('/', ''),

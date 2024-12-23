@@ -3,15 +3,7 @@ from .forms import *
 from .models import *
 
 def Home(request):
-    context = {
-        "admin_name":"Dharanish",
-        #"role" : "admin",
-        "role":"user",
-        "age" : 18,
-        "numbers" : [1,2,3,4,5]
-    }
-    return render(request, 'home.html',context)
-
+    return render(request, 'home.html')
 def about(request):
     return render(request,'about.html')
 def contact(request):
