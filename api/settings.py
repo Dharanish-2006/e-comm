@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from os import getenv
-# from dotenv import 
+from urllib.parse import urlparse
+import dj_database_url
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +29,7 @@ SECRET_KEY = 'django-insecure-=cldztbc4jg&xl0!x673!*v2_=p$$eu)=7*f#d0#zs$44xx-h^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app',]
 
 
 # Application definition
@@ -80,25 +82,28 @@ WSGI_APPLICATION = 'api.wsgi.app'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 # Note: Django modules for using databases are not support in serverless
 # environments like Vercel. You can use a database over HTTP, hosted elsewhere.
-
+load_dotenv(".env")
+tmpPostgres = urlparse(getenv("DATABASE_URL"))
 DATABASES = {
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
-    'default':{
-        'ENGINE':'django.db.backends.postgresql',
-        'NAME':getenv('neondb'),
-        'USER':getenv('neondb_owner'),
-        'PASSWORD':getenv('SVqg8TsNX1Ld'),
-        'HOST':getenv('ep-tight-boat-a1l4btcv-pooler.ap-southeast-1.aws.neon.tech'),
-        'PORT':getenv('PGPORT',5432),
-        'OPTIONS':{
-            'sslmode':'require',
-        },
-        'DISABLE_SERVER_SIDE_CURSORS':True,
+    'default': 
+        dj_database_url.parse(url=getenv("DATABASE_URL",''),
+        conn_max_age = 600,conn_health_checks=True)
+        # 'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': tmpPostgres.path.replace('/', ''),
+        # 'USER': tmpPostgres.username,
+        # 'PASSWORD': tmpPostgres.password,
+        # 'HOST': tmpPostgres.hostname,
+        # 'PORT': 5432,
+        # 'OPTIONS':{
+        #     'sslmode':'require',
+        # },
+        # 'DISABLE_SERVER_SIDE_CURSORS':True,
     }
-}
+
 
 
 # Password validation
