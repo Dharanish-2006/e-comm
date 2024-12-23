@@ -29,6 +29,7 @@
             <p>{{ widget.widget_type }}</p>
         </div>
         {% endfor %}
+        <p>hello</p>
     </div>
     <button id="save-layout" class="btn btn-primary mt-3">Save Layout</button>
 </div>
@@ -36,20 +37,20 @@
 <script>
     let dragged;
 
-    document.addEventListener('dragstart', (event) => {
+    document.addEventListener('dragstart',(event) => {
         dragged = event.target;
         event.target.style.opacity = 0.5;
     });
 
-    document.addEventListener('dragend', (event) => {
+    document.addEventListener('dragend',(event) => {
         event.target.style.opacity = '';
     });
 
-    document.addEventListener('dragover', (event) => {
+    document.addEventListener('dragover',(event) => {
         event.preventDefault();
     });
 
-    document.addEventListener('drop', (event) => {
+    document.addEventListener('drop',(event) => {
         event.preventDefault();
         if (event.target.classList.contains('col-md-3')) {
             event.target.parentNode.insertBefore(dragged, event.target);
