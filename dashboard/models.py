@@ -11,13 +11,13 @@ class Widget(models.Model):
 
 class Dashboard(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    layout = models.JSONField(default=dict)  # JSON to store widget positions
-
+    layout = models.JSONField(default=dict)
+    
     def __str__(self):
         return f"{self.user.username}'s Dashboard"
 
 class Alert(models.Model):
-    type = models.CharField(max_length=255)  # e.g., Low Stock
+    type = models.CharField(max_length=255)
     message = models.TextField()
     is_active = models.BooleanField(default=True)
 
