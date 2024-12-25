@@ -1,15 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-
-{% if role == "admin" %}
-        <h1>welcome {{admin_name}}</h1>
-    {% elif role == "user" %}
-        <h1>welcome to</h1>
-    {% endif %}
-    <h1>Django App</h1>
-    
-    <!--{% for num in numbers %}
-        {{num}}<br>
-    {% endfor %}-->
+    <h1>Welcome to</h1>
+    <h1>TN Mart App</h1>
+    <a href="/dashboard">dashboard</a>
 
 {% endblock %}
