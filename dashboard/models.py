@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from authentication.models import User
 
 class Widget(models.Model):
     name = models.CharField(max_length=255)
@@ -10,7 +11,7 @@ class Widget(models.Model):
         return self.name
 
 class Dashboard(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,default='0')
     layout = models.JSONField(default=dict)
     
     def __str__(self):

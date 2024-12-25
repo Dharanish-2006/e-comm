@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'OrderManagement',
     'bootstrap5',
     'dashboard',
+    'authentication',
 ]
 
 MIDDLEWARE = [
@@ -90,7 +91,7 @@ DATABASES = {
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
     'default': 
-        dj_database_url.parse(url=getenv("DATABASE_URL",'postgresql://neondb_owner:SVqg8TsNX1Ld@ep-tight-boat-a1l4btcv.ap-southeast-1.aws.neon.tech/neondb?sslmode=require'),
+        dj_database_url.parse(url=getenv("DATABASE_URL",'postgresql://neondb_owner:SVqg8TsNX1Ld@ep-tight-boat-a1l4btcv.ap-southeast-1.aws.neon.tech/e-comm?sslmode=require'),
         conn_max_age = 600,conn_health_checks=True)
         # 'ENGINE': 'django.db.backends.postgresql',
         # 'NAME': tmpPostgres.path.replace('/', ''),
@@ -146,4 +147,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'authentication'
+AUTH_USER_MODEL = 'authentication.User'
