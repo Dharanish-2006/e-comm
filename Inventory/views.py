@@ -28,7 +28,7 @@ def delete_product(request,id):
     selection = product.objects.get(id = id)
     selection.delete()
 
-    return redirect('/myorder/')
+    return redirect('/home/myorder/')
 def update_product(request,id):
     
     selection = product.objects.get(id = id)
@@ -40,6 +40,6 @@ def update_product(request,id):
         form = product_form(request.POST,instance=selection)
         if form.is_valid():
             form.save()
-            return redirect('/myorder/')
+            return redirect('/home/myorder/')
 
     return render(request,'cart.html',context)
