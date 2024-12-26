@@ -5,4 +5,11 @@
       "dest": "api/wsgi.py"
     }
   ]
+      {
+      "functions": {
+        "api/**/*.py": {
+          "maxDuration": 60
+        }
+      }
+}
 }
