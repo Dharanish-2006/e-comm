@@ -12,5 +12,8 @@ def login_page(request):
         else:
             context = { "error":"thappu" }
 
-
     return render(request,'login.html',context)
+def LogoutUser(request):
+    logout(request)
+    return(redirect('/'))
+
