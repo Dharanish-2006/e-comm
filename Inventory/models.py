@@ -1,5 +1,7 @@
 from django.db import models
 
+from authentication.models import User
+
 class product(models.Model):
     product_name = models.CharField(max_length=200,null=True)
     tax = models.FloatField(default=0.00)  
