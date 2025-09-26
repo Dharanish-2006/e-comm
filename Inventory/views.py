@@ -1,4 +1,5 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from .forms import *
 from .models import *
 
@@ -10,15 +11,26 @@ def contact(request):
     return render(request,'contact.html')
 def service(request):
     return render(request,'service.html')
+
+@login_required
 def cart(request):
-    context = {
-        'product_form':product_form(),
-    }
     if request.method == "POST":
-        form = product_form(request.POST)
-        if form.is_valid():
-            form.save()
-    return render(request,'cart.html',context)
+        product_id = request.POST.get("product_id")
+        product_obj = get_object_or_404(product, id=product_id)
+
+        # Add to user’s cart
+        cart_item, created = Cart.objects.get_or_create(
+            user=request.user,
+            product=product_obj
+        )
+        if not created:
+            cart_item.quantity += 1
+        cart_item.save()
+        return redirect("cart")  # refresh page
+
+    # Show only the logged-in user’s cart
+    items = Cart.objects.filter(user=request.user)
+    return render(request, "cart.html", {"items": items})
 def order(request):
     products = {
         "products":product.objects.all()

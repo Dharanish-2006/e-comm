@@ -3,10 +3,27 @@
 
 <h1>Cart</h1>
 
-<form action="" method="POST">
-    {% csrf_token %}
-    {{ product_form }}
-    <input type="submit" value="add">
-</form>
+<h2>Available Products</h2>
+<ul>
+  {% for p in products %}
+    <li>
+      {{ p.product_name }} - ${{ p.price }}
+      <form method="post" action="">
+        {% csrf_token %}
+        <input type="hidden" name="product_id" value="{{ p.id }}">
+        <button type="submit">Add to Cart</button>
+      </form>
+    </li>
+  {% endfor %}
+</ul>
+
+<h2>Your Cart</h2>
+<ul>
+  {% for item in items %}
+    <li>{{ item.product.product_name }} (x{{ item.quantity }})</li>
+  {% empty %}
+    <li>Your cart is empty</li>
+  {% endfor %}
+</ul>
 
 {% endblock %}
