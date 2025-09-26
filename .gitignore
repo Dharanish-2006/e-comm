@@ -8,6 +8,7 @@ media
 .env 
 .venv 
 .ulagam
+world
 env/ 
 venv/ 
 ENV/ 
