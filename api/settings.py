@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-=cldztbc4jg&xl0!x673!*v2_=p$$eu)=7*f#d0#zs$44xx-h^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app',]
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app','e-comm-ivory-six.vercel.app']
 
 
 # Application definition
@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -77,7 +78,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'api.wsgi.app'
+WSGI_APPLICATION = 'api.wsgi.application'
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 # Database
@@ -86,24 +89,12 @@ WSGI_APPLICATION = 'api.wsgi.app'
 # environments like Vercel. You can use a database over HTTP, hosted elsewhere.
 load_dotenv(".env")
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
-    'default': 
-        dj_database_url.parse(url=getenv("DATABASE_URL",'postgresql://neondb_owner:SVqg8TsNX1Ld@ep-tight-boat-a1l4btcv.ap-southeast-1.aws.neon.tech/e-comm?sslmode=require'),)
-        # 'ENGINE': 'django.db.backends.postgresql',
-        # 'NAME': tmpPostgres.path.replace('/', ''),
-        # 'USER': tmpPostgres.username,
-        # 'PASSWORD': tmpPostgres.password,
-        # 'HOST': tmpPostgres.hostname,
-        # 'PORT': 5432,
-        # 'OPTIONS':{
-        #     'sslmode':'require',
-        # },
-        # 'DISABLE_SERVER_SIDE_CURSORS':True,
-    }
-
+    'default': dj_database_url.config(
+        default=getenv("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True
+    )
+}
 
 
 # Password validation
