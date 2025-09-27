@@ -1,29 +1,48 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block content %}
 
-<h1>Cart</h1>
+<div class="container py-5">
+  <h1 class="mb-4">Your Cart</h1>
+  {% if items %}
+  <table class="table table-bordered text-white">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Total</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.product.product_name }}</td>
+        <td>${{ item.product.price }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>${{ item.line_total }}</td>
+        <td>
+          <form method="post" action="{% url 'remove_from_cart' item.product.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-<h2>Available Products</h2>
-<ul>
-  {% for p in products %}
-    <li>
-      {{ p.product_name }} - ${{ p.price }}
-      <form method="post" action="">
-        {% csrf_token %}
-        <input type="hidden" name="product_id" value="{{ p.id }}">
-        <button type="submit">Add to Cart</button>
-      </form>
-    </li>
-  {% endfor %}
-</ul>
+  <h4 class="mt-3">Grand Total: ${{ total }}</h4>
 
-<h2>Your Cart</h2>
-<ul>
-  {% for item in items %}
-    <li>{{ item.product.product_name }} (x{{ item.quantity }})</li>
-  {% empty %}
-    <li>Your cart is empty</li>
-  {% endfor %}
-</ul>
+  <div class="mt-3">
+    <a href="{% url 'home' %}" class="btn btn-secondary">Continue Shopping</a>
+    <a href="{% url 'orders' %}" class="btn btn-success">Proceed to Checkout</a>
+  </div>
+
+  {% else %}
+  <p>Your cart is empty.</p>
+  <a href="{% url 'home' %}" class="btn btn-primary">Go Shopping</a>
+  {% endif %}
+</div>
 
 {% endblock %}

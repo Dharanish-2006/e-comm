@@ -1,7 +1,27 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block content %}
-    <h1>Welcome to</h1>
-    <h1>TN Mart App</h1>
-    <a href="/dashboard">dashboard</a>
+
+<h1>welcome {{ dashboard.user.username }}</h1>
+
+<form method="get" class="mb-3">
+  <input type="text" name="q" placeholder="Search products..." class="form-control" value="{{ request.GET.q }}">
+</form>
+
+<div class="row">
+  {% for p in products %}
+  <div class="col-md-4 mb-3">
+    <div class="card text-dark">
+      <div class="card-body text-dark">
+        <h5 class="text-dark" >{{ p.product_name }}</h5>
+        <p>Price: ${{ p.price }}</p>
+        <a href="{% url 'product_detail' p.id %}" class="btn btn-primary">View</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <p>No products found.</p>
+  {% endfor %}
+</div>
+
 
 {% endblock %}

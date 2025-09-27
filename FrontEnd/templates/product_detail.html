@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>{{ product.product_name }}</h2>
+<p ><strong>Price:</strong> ${{ product.price }}</p>
+<p><strong>Description:</strong> {{ product.is_food_product|yesno:"Food Product,Non-food Product" }}</p>
+<p><strong>Tax:</strong> {{ product.tax }}%</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-success">Add to Cart</button>
+</form>
+
+<a href="{% url 'home' %}" class="btn btn-secondary mt-3">Back to Home</a>
+
+
+{% endblock %}
