@@ -1,27 +1,79 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>welcome {{ dashboard.user.username }}</h1>
+<div class="container my-5">
 
-<form method="get" class="mb-3">
-  <input type="text" name="q" placeholder="Search products..." class="form-control" value="{{ request.GET.q }}">
-</form>
+  <h1 class="mb-4 text-center text-white">Welcome, {{ dashboard.user.username }}</h1>
 
-<div class="row">
-  {% for p in products %}
-  <div class="col-md-4 mb-3">
-    <div class="card text-dark">
-      <div class="card-body text-dark">
-        <h5 class="text-dark" >{{ p.product_name }}</h5>
-        <p>Price: ${{ p.price }}</p>
-        <a href="{% url 'product_detail' p.id %}" class="btn btn-primary">View</a>
+  <form id="search-form" class="d-flex mb-4 justify-content-center">
+    <div class="input-group" style="max-width: 600px;">
+      <input 
+        type="text" 
+        id="search-input"
+        name="q" 
+        class="form-control form-control-lg rounded-start bg-dark text-white border-0 shadow-sm" 
+        placeholder="Search products..." 
+        value="{{ request.GET.q }}" 
+        autocomplete="off">
+      <button class="btn btn-primary rounded-end" type="submit">
+        <i class="bi bi-search"></i> Search
+      </button>
+    </div>
+  </form>
+
+  <div id="suggestions" class="list-group position-absolute w-50 mx-auto" style="z-index: 1000;"></div>
+  <div id="products-grid" class="row mt-4">
+    {% for p in products %}
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 shadow-sm border-0 bg-dark rounded-3">
+        <img src="{{ p.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+        <div class="card-body">
+          <h5 class="card-title">{{ p.product_name }}</h5>
+          <p class="card-text text-success fw-bold">${{ p.price }}</p>
+          <a href="{% url 'product_detail' p.id %}" class="btn btn-primary w-100">View</a>
+        </div>
       </div>
     </div>
+    {% empty %}
+    <p class="text-center text-white">No products found.</p>
+    {% endfor %}
   </div>
-  {% empty %}
-  <p>No products found.</p>
-  {% endfor %}
+
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById('search-input');
+  const suggestions = document.getElementById('suggestions');
+  const productsGrid = document.getElementById('products-grid');
+
+  input.addEventListener('input', function() {
+    const query = input.value;
+    if(query.length < 2) {
+      suggestions.innerHTML = '';
+      return;
+    }
+
+    fetch(`/home/?q=${query}&ajax=1`)
+      .then(res => res.json())
+      .then(data => {
+        suggestions.innerHTML = '';
+        data.forEach(product => {
+          const item = document.createElement('a');
+          item.href = `/home/product/${product.id}/`;
+          item.className = 'list-group-item list-group-item-action';
+          item.innerHTML = `<img src="${product.image}" style="width:40px;height:40px;object-fit:cover;" class="me-2 rounded">${product.name} - $${product.price}`;
+          suggestions.appendChild(item);
+        });
+      });
+  });
+
+  document.addEventListener('click', e => {
+    if(!e.target.closest('#search-form')) {
+      suggestions.innerHTML = '';
+    }
+  });
+});
+</script>
 
 {% endblock %}
