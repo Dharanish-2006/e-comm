@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'bootstrap5',
     'dashboard',
     'authentication',
-    "storages",
 ]
 
 MIDDLEWARE = [
