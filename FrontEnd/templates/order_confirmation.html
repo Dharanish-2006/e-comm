@@ -7,10 +7,10 @@
     <p class="lead">Your order has been placed successfully.</p>
   </div>
 
-  <div class="card shadow-sm mt-5">
+  <div class="card shadow-sm mt-5 bg-dark text-white">
     <div class="card-body">
       <h4 class="mb-3">Order Summary</h4>
-      <table class="table">
+      <table class="table text-white">
         <thead>
           <tr>
             <th>Product</th>
@@ -23,7 +23,7 @@
           <tr>
             <td>{{ item.product.product_name }}</td>
             <td>{{ item.quantity }}</td>
-            <td class="text-end">${{ item.total_price }}</td>
+            <td class="text-end">${{ item.product.price }}</td>
           </tr>
           {% endfor %}
         </tbody>

@@ -1,31 +1,58 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block content %}
-<style>
-table,td,th{
-    border: 3px solid ;
-    border-collapse: collapse;
-    padding: 10px;
-}
-</style>
 
-<h1>My orders</h1>
-<table >
-    <thead>
-        <tr>
-            <th>product name</th>
-            <th>tax</th>
-            <th>price</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for product in products %}
-        <tr>
-            <td>{{product.product_name}}</td>
-            <td>{{product.tax}}</td>
-            <td>{{product.price}}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container my-5 text-dark">
+    <h2 class="mb-4 text-white">🛒 My Orders</h2>
+
+    {% if orders %}
+        <div class="row g-4">
+            {% for order in orders %}
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0 bg-dark text-white">
+                        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                            <span>Order #{{ order.id }}</span>
+                            <span class="badge 
+                                {% if order.status == 'Pending' %}bg-warning
+                                {% elif order.status == 'Shipped' %}bg-info
+                                {% elif order.status == 'Delivered' %}bg-success
+                                {% else %}bg-secondary{% endif %}">
+                                {{ order.status }}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group mb-3">
+                                {% for item in order.items.all %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.product_name }}" class="rounded me-3" style="width:50px;height:50px;object-fit:cover;">
+                                            <div>
+                                                <strong>{{ item.product.product_name }}</strong>
+                                                <div class="text-muted small">Qty: {{ item.quantity }}</div>
+                                            </div>
+                                        </div>
+                                        <span class="fw-bold">${{ item.price }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">Total</span>
+                                <span class="fw-bold text-success">${{ order.total }}</span>
+                            </div>
+                        </div>
+                         <div class="card-footer text-end">
+                            <a href="{% url 'order_detail' order.id %}" class="btn btn-outline-primary btn-sm rounded-pill">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center mt-5">
+            <i class="bi bi-cart-x text-white" style="font-size:4rem;"></i>
+            <p class="lead text-white mt-3">You haven't placed any orders yet.</p>
+            <a href="{% url 'home' %}" class="btn btn-primary btn-lg rounded-pill">Start Shopping</a>
+        </div>
+    {% endif %}
+</div>
 
 {% endblock %}

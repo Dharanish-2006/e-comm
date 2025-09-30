@@ -1,79 +1,76 @@
 {% extends "base.html" %}
 {% block content %}
 
+<div class="container-fluid bg-dark text-light py-5">
+  <div class="container text-center">
+    <h1 class="display-3 fw-bold">Welcome to <span class="text-primary">Cartsy</span></h1>
+    <p class="lead mt-3">Your one-stop shop for everything you love</p>
+    <a href="{% url 'product_list' %}" class="btn btn-primary btn-lg rounded-pill mt-4 shadow">
+      <i class="bi bi-cart"></i> Start Shopping
+    </a>
+  </div>
+</div>
+
 <div class="container my-5">
-
-  <h1 class="mb-4 text-center text-white">Welcome, {{ dashboard.user.username }}</h1>
-
-  <form id="search-form" class="d-flex mb-4 justify-content-center">
-    <div class="input-group" style="max-width: 600px;">
-      <input 
-        type="text" 
-        id="search-input"
-        name="q" 
-        class="form-control form-control-lg rounded-start bg-dark text-white border-0 shadow-sm" 
-        placeholder="Search products..." 
-        value="{{ request.GET.q }}" 
-        autocomplete="off">
-      <button class="btn btn-primary rounded-end" type="submit">
-        <i class="bi bi-search"></i> Search
-      </button>
-    </div>
-  </form>
-
-  <div id="suggestions" class="list-group position-absolute w-50 mx-auto" style="z-index: 1000;"></div>
-  <div id="products-grid" class="row mt-4">
-    {% for p in products %}
-    <div class="col-md-4 mb-4">
-      <div class="card h-100 shadow-sm border-0 bg-dark rounded-3">
-        <img src="{{ p.image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
-        <div class="card-body">
-          <h5 class="card-title">{{ p.product_name }}</h5>
-          <p class="card-text text-success fw-bold">${{ p.price }}</p>
-          <a href="{% url 'product_detail' p.id %}" class="btn btn-primary w-100">View</a>
+  <h2 class="text-center fw-bold mb-4">Featured Products</h2>
+  <div class="row g-4">
+    {% for product in products %}
+    <div class="col-md-4">
+      <div class="card bg-secondary shadow-sm h-100">
+        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.product_name }}">
+        <div class="card-body bg-dark text-center">
+          <h5 class="card-title">{{ product.product_name }}</h5>
+          <p class="text-muted">${{ product.price }}</p>
+          <a href="{% url 'product_detail' product.id %}" class="btn btn-primary btn-sm rounded-pill">
+            View Details
+          </a>
         </div>
       </div>
     </div>
     {% empty %}
-    <p class="text-center text-white">No products found.</p>
+    <p class="text-center">No products available yet.</p>
     {% endfor %}
   </div>
-
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const input = document.getElementById('search-input');
-  const suggestions = document.getElementById('suggestions');
-  const productsGrid = document.getElementById('products-grid');
+<div class="container my-5">
+  <h2 class="text-center fw-bold mb-4">Shop by Category</h2>
+  <div class="row g-8 text-center bg-dark">
+    <div class="col-md-3">
+      <div class="p-4 bg-dark rounded shadow-sm h-100">
+        <i class="bi bi-phone display-4 text-primary"></i>
+        <h5 class="mt-3">Electronics</h5>
+      </div>
+    </div>
+    <div class="col-md-3 bg-dark">
+      <div class="p-4 bg-dark rounded shadow-sm h-100">
+        <i class="bi bi-bag-heart display-4 text-danger"></i>
+        <h5 class="mt-3">Fashion</h5>
+      </div>
+    </div>
+    <div class="col-md-3 bg-dark">
+      <div class="p-4 bg-dark rounded shadow-sm h-100">
+        <i class="bi bi-house display-4 text-success"></i>
+        <h5 class="mt-3">Home Apliance</h5>
+      </div>
+    </div>
+    <div class="col-md-3 bg-dark">
+      <div class="p-4 bg-dark rounded shadow-sm h-100">
+        <i class="bi bi-emoji-smile display-4 text-warning"></i>
+        <h5 class="mt-3">Lifestyle</h5>
+      </div>
+    </div>
+  </div>
+</div>
 
-  input.addEventListener('input', function() {
-    const query = input.value;
-    if(query.length < 2) {
-      suggestions.innerHTML = '';
-      return;
-    }
-
-    fetch(`/home/?q=${query}&ajax=1`)
-      .then(res => res.json())
-      .then(data => {
-        suggestions.innerHTML = '';
-        data.forEach(product => {
-          const item = document.createElement('a');
-          item.href = `/home/product/${product.id}/`;
-          item.className = 'list-group-item list-group-item-action';
-          item.innerHTML = `<img src="${product.image}" style="width:40px;height:40px;object-fit:cover;" class="me-2 rounded">${product.name} - $${product.price}`;
-          suggestions.appendChild(item);
-        });
-      });
-  });
-
-  document.addEventListener('click', e => {
-    if(!e.target.closest('#search-form')) {
-      suggestions.innerHTML = '';
-    }
-  });
-});
-</script>
+<div class="container-fluid bg-primary text-dark py-5 mt-3">
+  <div class="container text-center">
+    <h2 class="fw-bold">Discover the Best Deals on Cartsy</h2>
+    <p class="lead">Shop smart, shop fast, shop Cartsy</p>
+    <a href="{% url 'product_list' %}" class="btn btn-dark btn-lg rounded-pill shadow">
+      <i class="bi bi-arrow-right-circle"></i> Shop Now
+    </a>
+  </div>
+</div>
 
 {% endblock %}

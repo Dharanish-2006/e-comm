@@ -19,7 +19,6 @@ def Home(request):
         "products": products
     })
 
-
 @login_required
 def product_detail(request, pk):
     item = get_object_or_404(product, pk=pk)
@@ -81,11 +80,18 @@ def remove_from_cart(request, pk):
     item.delete()
     return redirect("cart")
 
+@login_required
 def order(request):
-    products = {
-        "products":product.objects.all()
-    }
-    return render(request,'my_orders.html',products)
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    orders = orders.prefetch_related('orderitem_set__product')
+    return render(request, "my_orders.html", {"orders": orders})
+
+@login_required
+def order_detail(request, pk):
+    order = get_object_or_404(Order, pk=pk, user=request.user)
+    items = order.orderitem_set.select_related('product')
+    return render(request, "order_detail.html", {"order": order, "items": items})
+
 
 def delete_product(request,id):
     selection = product.objects.get(id = id)
@@ -154,22 +160,3 @@ def decrease_quantity(request, item_id):
     else:
         item.delete()
     return redirect("cart")
-
-# @login_required
-# def checkout(request):
-#     items = Cart.objects.filter(user=request.user)
-#     if not items.exists():
-#         return redirect('cart')
-#     order_items = []
-#     order_total = 0
-#     for item in items:
-#         total_price = item.product.price * item.quantity
-#         item.total_price = total_price 
-#         order_items.append(item)
-#         order_total += total_price
-#     items.delete()
-
-#     return render(request, 'order_confirmation.html', {
-#         'order_items': order_items,
-#         'order_total': order_total
-#     })
