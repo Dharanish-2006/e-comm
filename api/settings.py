@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'bootstrap5',
     'dashboard',
     'authentication',
+    "storages",
 ]
 
 MIDDLEWARE = [
@@ -82,7 +83,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'api.wsgi.app'
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+AWS_ACCESS_KEY_ID = "2b8235e2512436ee6203a0145b895269"
+AWS_SECRET_ACCESS_KEY = "2221356fb6d0a8df41ad3bc363dfd159250e333cec170787156e6cb1229852a0"
+AWS_STORAGE_BUCKET_NAME = "e-comm"
+AWS_S3_ENDPOINT_URL = "https://4fe9b42ef1ab9163cfb7737b37b71add.r2.cloudflarestorage.com"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
