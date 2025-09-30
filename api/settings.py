@@ -79,7 +79,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'api.wsgi.application'
+WSGI_APPLICATION = 'api.wsgi.app'
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 # DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
