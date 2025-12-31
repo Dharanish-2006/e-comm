@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import product as Product,ProductImage
+from Inventory.models import product as Product, ProductImage
+from .models import Order, OrderItem
 from .forms import ProductForm,ProductImageForm
 from django.forms import modelformset_factory
 

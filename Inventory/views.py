@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .forms import *
-from .models import *
 from dashboard.models import *
+from .models import product, Cart
+from OrderManagement.models import Order, OrderItem
 
 @login_required
 def Home(request):
@@ -83,13 +84,13 @@ def remove_from_cart(request, pk):
 @login_required
 def order(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    orders = orders.prefetch_related('orderitem_set__product')
+    orders = orders.prefetch_related('items__product')
     return render(request, "my_orders.html", {"orders": orders})
 
 @login_required
 def order_detail(request, pk):
     order = get_object_or_404(Order, pk=pk, user=request.user)
-    items = order.orderitem_set.select_related('product')
+    items = order.items.select_related('product')
     return render(request, "order_detail.html", {"order": order, "items": items})
 
 
@@ -123,24 +124,37 @@ def place_order(request):
     items = Cart.objects.filter(user=request.user)
 
     if not items.exists():
-        return redirect('cart') 
-    order_total = sum(item.total_price for item in items)
+        return redirect("cart")
 
-    order = Order.objects.create(user=request.user, total=order_total)
+    if request.method == "POST":
+        order_total = sum(item.total_price for item in items)
 
-    for item in items:
-        OrderItem.objects.create(
-            order=order,
-            product=item.product,
-            quantity=item.quantity,
-            price=item.product.price
+        order = Order.objects.create(
+            user=request.user,
+            full_name=request.POST.get("full_name"),
+            address=request.POST.get("address"),
+            city=request.POST.get("city"),
+            postal_code=request.POST.get("postal_code"),
+            country=request.POST.get("country"),
+            payment_method=request.POST.get("payment_method"),
+            total=order_total
         )
-    items.delete()
 
-    return render(request, "order_confirmation.html", {
-        "order_items": order.orderitem_set.all(),
-        "order_total": order_total
-    })
+        for item in items:
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.product.price
+            )
+
+        items.delete()
+
+        return render(request, "order_confirmation.html", {
+            "order": order,
+            "order_items": order.items.all(),
+            "order_total": order_total
+        })
 
 
 @login_required

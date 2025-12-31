@@ -1,5 +1,5 @@
 from django import forms
-from .models import product,ProductImage
+from Inventory.models import product, ProductImage
 
 class ProductForm(forms.ModelForm):
     class Meta:

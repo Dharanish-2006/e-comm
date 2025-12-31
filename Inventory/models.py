@@ -27,13 +27,3 @@ class Cart(models.Model):
     
     def __str__(self):
         return f"{self.user.username} - {self.product.product_name} ({self.quantity})"
-class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    total = models.FloatField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.ForeignKey(product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-    price = models.FloatField()
