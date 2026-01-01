@@ -144,3 +144,5 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'authentication.User'
 LOGIN_REDIRECT_URL = "home"
+RAZORPAY_KEY_ID = getenv("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = getenv("RAZORPAY_KEY_SECRET")

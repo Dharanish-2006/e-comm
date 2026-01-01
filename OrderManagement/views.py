@@ -1,7 +1,12 @@
+import razorpay
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from Inventory.models import Cart
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from Inventory.models import product as Product, ProductImage
-from .models import Order, OrderItem
+from .models import Order, OrderItem, Payment
 from .forms import ProductForm,ProductImageForm
 from django.forms import modelformset_factory
 
@@ -72,3 +77,114 @@ def product_delete(request, pk):
         product.delete()
         return redirect("product_list")
     return render(request, "OrderManagement/product_delete.html", {"product": product})
+
+@login_required
+def create_cod_order(request):
+    items = Cart.objects.filter(user=request.user)
+    if not items.exists():
+        return JsonResponse({"status": "error"})
+
+    total = sum(item.total_price for item in items)
+
+    order = Order.objects.create(
+        user=request.user,
+        full_name=request.session.get("full_name", ""),
+        address=request.session.get("address", ""),
+        city=request.session.get("city", ""),
+        postal_code=request.session.get("postal_code", ""),
+        country=request.session.get("country", ""),
+        total_amount=total,
+        payment_method="COD",
+        payment_status="PENDING",
+    )
+    order.status = "CONFIRMED"
+    order.save()
+
+    for item in items:
+        OrderItem.objects.create(
+            order=order,
+            product=item.product,
+            quantity=item.quantity,
+            price=item.product.price,
+        )
+
+    items.delete()
+
+    return JsonResponse({"status": "success"})
+
+
+@login_required
+def create_razorpay_order(request):
+    items = Cart.objects.filter(user=request.user)
+    if not items.exists():
+        return JsonResponse({"error": "Cart empty"}, status=400)
+
+    total = sum(item.total_price for item in items)
+    amount = int(total * 100)
+
+    client = razorpay.Client(
+        auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+    )
+
+    razorpay_order = client.order.create({
+        "amount": amount,
+        "currency": "INR",
+        "payment_capture": 1
+    })
+
+    request.session["razorpay_order_id"] = razorpay_order["id"]
+    request.session["order_total"] = total
+
+    return JsonResponse({
+        "order_id": razorpay_order["id"],
+        "amount": amount,
+        "key": settings.RAZORPAY_KEY_ID
+    })
+
+@csrf_exempt
+def verify_payment(request):
+    if request.method == "POST":
+        data = request.POST
+
+        client = razorpay.Client(
+            auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+        )
+
+        try:
+            client.utility.verify_payment_signature({
+                "razorpay_order_id": data["razorpay_order_id"],
+                "razorpay_payment_id": data["razorpay_payment_id"],
+                "razorpay_signature": data["razorpay_signature"],
+            })
+
+            # ✅ CREATE ORDER HERE
+            items = Cart.objects.filter(user=request.user)
+            total = request.session.get("order_total")
+
+            order = Order.objects.create(
+                user=request.user,
+                total_amount=total,
+                payment_method="ONLINE",
+                payment_status="SUCCESS",
+                status="PAID",
+                razorpay_order_id=data["razorpay_order_id"]
+            )
+
+            for item in items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                    price=item.product.price
+                )
+
+            items.delete()
+
+            return JsonResponse({"status": "success"})
+
+        except Exception as e:
+            return JsonResponse({"status": "failed", "error": str(e)})
+
+@login_required
+def order_success(request):
+    return render(request, "order_confirmation.html")

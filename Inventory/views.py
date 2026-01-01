@@ -65,15 +65,9 @@ def cart(request):
             cart_item.save()
             return redirect("cart")
 
-        elif "checkout" in request.POST:
-            Cart.objects.filter(user=request.user).delete()
-            return redirect("orders")
-
     items = Cart.objects.filter(user=request.user)
-
-    total = sum(item.product.price * item.quantity for item in items)
-
-    return render(request, "cart.html", {"items": items, "total": total})
+    total = sum(item.total_price for item in items)
+    return render(request, "cart.html", {"items": items,"total": total})
 
 @login_required
 def remove_from_cart(request, pk):
@@ -83,8 +77,13 @@ def remove_from_cart(request, pk):
 
 @login_required
 def order(request):
-    orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    orders = orders.prefetch_related('items__product')
+    orders = (
+        Order.objects
+        .filter(user=request.user)
+        .prefetch_related("items__product")
+        .select_related("payment")
+        .order_by("-created_at")
+    )
     return render(request, "my_orders.html", {"orders": orders})
 
 @login_required
@@ -93,14 +92,19 @@ def order_detail(request, pk):
     items = order.items.select_related('product')
     return render(request, "order_detail.html", {"order": order, "items": items})
 
-
+@login_required
 def delete_product(request,id):
-    selection = product.objects.get(id = id)
+    if not request.user.is_staff:
+        return redirect("home")
+    selection = get_object_or_404(product, id=id)
     selection.delete()
     return redirect('/home/myorder/')
 
+@login_required
 def update_product(request,id):
-    selection = product.objects.get(id = id)
+    if not request.user.is_staff:
+        return redirect("home")
+    selection = get_object_or_404(product, id=id)
     context = {
         'product_form' : product_form(instance=selection)
     }
@@ -113,49 +117,23 @@ def update_product(request,id):
 
 @login_required
 def checkout(request):
+    if request.method == "POST":
+        request.session["full_name"] = request.POST.get("full_name","")
+        request.session["address"] = request.POST.get("address", "")
+        request.session["city"] = request.POST.get("city", "")
+        request.session["postal_code"] = request.POST.get("postal_code", "")
+        request.session["country"] = request.POST.get("country", "")
+
+
     items = Cart.objects.filter(user=request.user)
-    total = sum(item.total_price for item in items)
-
-    return render(request, "checkout.html", {"items": items, "total": total})
-
-
-@login_required
-def place_order(request):
-    items = Cart.objects.filter(user=request.user)
-
     if not items.exists():
         return redirect("cart")
+    total = sum(item.total_price for item in items)
 
-    if request.method == "POST":
-        order_total = sum(item.total_price for item in items)
-
-        order = Order.objects.create(
-            user=request.user,
-            full_name=request.POST.get("full_name"),
-            address=request.POST.get("address"),
-            city=request.POST.get("city"),
-            postal_code=request.POST.get("postal_code"),
-            country=request.POST.get("country"),
-            payment_method=request.POST.get("payment_method"),
-            total=order_total
-        )
-
-        for item in items:
-            OrderItem.objects.create(
-                order=order,
-                product=item.product,
-                quantity=item.quantity,
-                price=item.product.price
-            )
-
-        items.delete()
-
-        return render(request, "order_confirmation.html", {
-            "order": order,
-            "order_items": order.items.all(),
-            "order_total": order_total
-        })
-
+    return render(request, "checkout.html", {
+        "items": items,
+        "total": total
+    })
 
 @login_required
 def increase_quantity(request, item_id):
