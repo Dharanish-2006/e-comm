@@ -1,4 +1,5 @@
 import razorpay
+from .utils import send_order_confirmation_email
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -99,7 +100,7 @@ def create_cod_order(request):
     )
     order.status = "CONFIRMED"
     order.save()
-
+    send_order_confirmation_email(order)
     for item in items:
         OrderItem.objects.create(
             order=order,
@@ -157,7 +158,6 @@ def verify_payment(request):
                 "razorpay_signature": data["razorpay_signature"],
             })
 
-            # ✅ CREATE ORDER HERE
             items = Cart.objects.filter(user=request.user)
             total = request.session.get("order_total")
 
@@ -179,12 +179,12 @@ def verify_payment(request):
                 )
 
             items.delete()
-
+            send_order_confirmation_email(order)
             return JsonResponse({"status": "success"})
 
         except Exception as e:
             return JsonResponse({"status": "failed", "error": str(e)})
-
+ 
 @login_required
 def order_success(request):
     return render(request, "order_confirmation.html")
