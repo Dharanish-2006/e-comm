@@ -10,7 +10,7 @@
     {% bootstrap_javascript %}
 </head>
 <body>
-{% if show_navbar %}
+{% if show_navbar|default:True %}
   {% include "navbar.html" %}
 {% endif %}
 
