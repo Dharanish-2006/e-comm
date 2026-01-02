@@ -51,7 +51,7 @@ def signup(request):
                         "Welcome to E-Comm!\n\n"
                         "You can now place orders, track them, and enjoy shopping.\n\n"
                         "Happy Shopping 🛒\n"
-                        "E-Comm Team"
+                        "CARTSY Team"
                     ),
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[user.email],
