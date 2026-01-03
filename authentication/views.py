@@ -45,10 +45,10 @@ def signup(request):
 
             if user.email:
                 send_mail(
-                    subject="Welcome to E-Comm 🎉",
+                    subject="Welcome to CARTSY 🎉",
                     message=(
                         f"Hi {user.username},\n\n"
-                        "Welcome to E-Comm!\n\n"
+                        "Welcome to CARTSY!\n\n"
                         "You can now place orders, track them, and enjoy shopping.\n\n"
                         "Happy Shopping 🛒\n"
                         "CARTSY Team"

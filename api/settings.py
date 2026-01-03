@@ -119,6 +119,19 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+}
 
 
 # Internationalization
@@ -153,3 +166,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+ZOHO_CLIENT_ID = getenv("ZOHO_CLIENT_ID")
+ZOHO_CLIENT_SECRET = getenv("ZOHO_CLIENT_SECRET")
+ZOHO_REFRESH_TOKEN = getenv("ZOHO_REFRESH_TOKEN")
+ZOHO_API_DOMAIN = getenv("ZOHO_API_DOMAIN")

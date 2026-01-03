@@ -1,5 +1,5 @@
 import razorpay
-from .utils import send_order_confirmation_email
+from OrderManagement.utils.email import send_order_confirmation_email
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -96,7 +96,7 @@ def create_cod_order(request):
         country=request.session.get("country", ""),
         total_amount=total,
         payment_method="COD",
-        payment_status="PENDING",
+        payment_status="SUCCESS"
     )
     order.status = "CONFIRMED"
     order.save()
