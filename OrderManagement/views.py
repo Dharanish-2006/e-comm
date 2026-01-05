@@ -9,67 +9,71 @@ from django.contrib.auth.decorators import login_required
 from Inventory.models import product as Product, ProductImage
 from .models import Order, OrderItem, Payment
 from .forms import ProductForm,ProductImageForm
-from django.forms import modelformset_factory
+from OrderManagement.forms import ProductForm, ProductImageFormSet
 
 @login_required
 def product_list(request):
     products = Product.objects.all()
     return render(request, "OrderManagement/product_list.html", {"products": products})
 
-ProductImageFormSet = modelformset_factory(ProductImage, form=ProductImageForm, extra=3)
 
 @login_required
 def product_create(request):
     if request.method == "POST":
         form = ProductForm(request.POST, request.FILES)
-        formset = ProductImageFormSet(request.POST, request.FILES, queryset=ProductImage.objects.none())
 
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid():
             product = form.save()
 
-            for subform in formset:
-                if subform.cleaned_data.get("image"):
-                    ProductImage.objects.create(product=product, image=subform.cleaned_data["image"])
-            return redirect("product_list")
+            formset = ProductImageFormSet(
+                request.POST,
+                request.FILES,
+                instance=product
+            )
+
+            if formset.is_valid():
+                formset.save()
+                return redirect("product_list")
+        else:
+            formset = ProductImageFormSet()
+
     else:
         form = ProductForm()
-        formset = ProductImageFormSet(queryset=ProductImage.objects.none())
-    return render(request, "OrderManagement/product_form.html", {"form": form, "formset": formset})
+        formset = ProductImageFormSet()
 
-
-from django.forms import modelformset_factory
-
-ProductImageFormSet = modelformset_factory(ProductImage, form=ProductImageForm, extra=3, can_delete=True)
-
-@login_required
-def product_edit(request, pk):
-    item = get_object_or_404(Product, pk=pk)
-    
-    if request.method == "POST":
-        form = ProductForm(request.POST, request.FILES, instance=item)
-        formset = ProductImageFormSet(request.POST, request.FILES, queryset=ProductImage.objects.filter(product=item))
-        
-        if form.is_valid() and formset.is_valid():
-            form.save()
-            
-            for subform in formset:
-                if subform.cleaned_data.get("id") and subform.cleaned_data.get("DELETE"):
-                    subform.cleaned_data["id"].delete()
-                elif subform.cleaned_data.get("image"):
-                    image_instance = subform.save(commit=False)
-                    image_instance.product = item
-                    image_instance.save()
-            
-            return redirect("orders")
-    else:
-        form = ProductForm(instance=item)
-        formset = ProductImageFormSet(queryset=ProductImage.objects.filter(product=item))
-    
-    return render(request, "OrderManagement/product_edit.html", {
+    return render(request, "OrderManagement/product_form.html", {
         "form": form,
         "formset": formset
     })
 
+
+@login_required
+def product_edit(request, pk):
+    item = get_object_or_404(Product, pk=pk)
+
+    if request.method == "POST":
+        form = ProductForm(request.POST, request.FILES, instance=item)
+        formset = ProductImageFormSet(
+            request.POST,
+            request.FILES,
+            instance=item
+        )
+
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+            return redirect("product_list")
+        else:
+            print(formset.errors)
+
+    else:
+        form = ProductForm(instance=item)
+        formset = ProductImageFormSet(instance=item)
+
+    return render(request, "OrderManagement/product_edit.html", {
+        "form": form,
+        "formset": formset
+    })
 
 @login_required
 def product_delete(request, pk):
