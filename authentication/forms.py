@@ -5,14 +5,15 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class SignUpForm(UserCreationForm):
+    email = forms.EmailField(required=True)
     class Meta:
         model = User
-        fields = ["username", "email", "password1", "password2"]
-    
-    def clean_mail(self):
+        fields = ("username", "email", "password1", "password2")
+
+    def clean_email(self):
         email = self.cleaned_data.get("email")
-        if User.objects.filter(email_iexact=email).exists():
-            raise forms.ValidationError('email already exists')
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("This email is already registered.")
         return email
 
     def __init__(self, *args, **kwargs):
