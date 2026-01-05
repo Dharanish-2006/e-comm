@@ -11,9 +11,10 @@
     {% bootstrap_javascript %}
 </head>
 <body>
-{% if show_navbar|default:True %}
+{% block navbar %}
   {% include "navbar.html" %}
-{% endif %}
+{% endblock %}
+
 
 <style>
 body{
