@@ -4,6 +4,8 @@ from django.shortcuts import render,redirect
 from django.contrib.auth import login,logout
 from django.contrib.auth.views import LoginView
 from django.conf import settings
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import EmailOTP,User
 from OrderManagement.utils.otp import generate_otp
 from .forms import SignUpForm
@@ -12,7 +14,7 @@ from datetime import timedelta
 
 class CustomLoginView(LoginView):
     template_name = "login.html"
-
+    @method_decorator(ensure_csrf_cookie)
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect("home")
